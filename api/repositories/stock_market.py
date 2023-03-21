@@ -30,7 +30,12 @@ class StockMarketRepository:
         return stock
 
     def validate(self, response):
-        if 'Note' in response.json():  # Alpha Vantage API gives 200 even on max calls.
+        """
+        Validate that Alpha Vantage API response didn't exceed requests.
+
+        Status 200 is always returned hence it's necessary to check the response body.
+        """
+        if 'Note' in response.json():
             raise HTTPException(
                 status_code=HTTPStatus.TOO_MANY_REQUESTS,
                 detail='Maximum requests reached for Alpha Vantage API.'
