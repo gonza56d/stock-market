@@ -1,6 +1,8 @@
 from http import HTTPStatus
 
+from api.models.auth import Auth
 from api.models.users import User, UserSignUp
+from api.repositories.auth import AuthRepository
 from api.repositories.users import UsersRepository
 from tests import ApiTest
 
@@ -27,3 +29,14 @@ class TestUsers(ApiTest):
             'json': response.json(),
             'user': UsersRepository().find(False, email=sign_up.email)
         } == expected_result
+
+    def test_sign_up_credentials_ok(self):
+        sign_up = UserSignUp(
+            email='test@test.com',
+            name='John',
+            last_name='Rambo',
+            password='nothashedpassowrd'
+        )
+        self.client.post('/users/sign_up', json=sign_up.dict())
+
+        assert AuthRepository().validate(sign_up.email, sign_up.password)

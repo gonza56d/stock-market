@@ -44,11 +44,17 @@ class AuthRepository:
         email_taken = self.is_taken(email=auth.email)
         if email_taken:
             raise
-        self._collection.insert(auth.dict())
+        self._collection.insert_one(auth.dict())
 
     def is_taken(self, email: str):
-        taken = self._collection.count({'email': email})
+        taken = self._collection.count_documents({'email': email})
         return taken > 0
+
+    def validate(self, email: str, password: str) -> bool:
+        result = self._collection.count_documents(
+            {'email': email, 'password': password}
+        )
+        return result > 0
 
     def delete(self, **filters) -> None:
         self._collection.delete_many(filters)
