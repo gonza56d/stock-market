@@ -71,3 +71,14 @@ class TestUsers(ApiTest):
         response = self.client.post('/users/sign_up', json=request_payload)
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_sign_up_invalid_email(self):
+        request_payload = {
+            'email': 'notanemail',
+            'name': 'John',
+            'last_name': 'Rambo',
+            'password': 'nothashedpassowrd'
+        }
+        response = self.client.post('/users/sign_up', json=request_payload)
+
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
