@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from parameterized import parameterized
+
 from api.models.users import UserSignUp
 from tests import ApiTest
 
@@ -16,7 +18,7 @@ class TestAuth(ApiTest):
         )
         self.client.post('/users/sign_up', json=self.sign_up.dict())
 
-    def test_authenticate(self):
+    def test_authenticate_ok(self):
         response = self.client.post(
             '/auth',
             json={
@@ -27,3 +29,44 @@ class TestAuth(ApiTest):
 
         assert response.status_code == HTTPStatus.CREATED
         assert 'token' in response.json()
+
+    @parameterized.expand([
+        ('test@test.com', 'wrongpassword'),
+        ('wrong@email.com', 'nothashedpassowrd'),
+        ('wrong@email.com', 'wrongpasswordtoo')
+    ])
+    def test_authenticate_wrong_credentials(self, email: str, password: str):
+        response = self.client.post(
+            '/auth',
+            json={
+                'email': email,
+                'password': password
+            }
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_auth_token_ok(self):
+        auth_response = self.client.post(
+            '/auth',
+            json={
+                'email': self.sign_up.email,
+                'password': self.sign_up.password
+            }
+        )
+        token = auth_response.json()['token']
+
+        response = self.client.get(
+            '/stock-market',
+            headers={'Authorization': f'Bearer {token}'}
+        )
+
+        assert response.status_code == HTTPStatus.OK
+
+    def test_auth_wrong_token(self):
+        response = self.client.get(
+            '/stock-market',
+            headers={'Authorization': f'Bearer SomeRandom.WronG.TOKEN!'}
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
