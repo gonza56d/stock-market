@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
 
 
 @router.get('/')
-async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]):
+async def require_auth_token(token: Annotated[str, Depends(oauth2_scheme)]):
     """Validate session token against cache and return user email."""
     try:
         email = AuthBusiness().validate_token(token)

@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from .auth import get_current_user_email
+from .auth import require_auth_token
 from api.models.users import User
 
 router = APIRouter(
@@ -13,6 +13,6 @@ router = APIRouter(
 
 
 @router.get('/')
-async def test(token: Annotated[User, Depends(get_current_user_email)]):
+async def root(token: Annotated[User, Depends(require_auth_token)]):
     """Root endpoint. Requires auth token."""
     return {'user': token}
