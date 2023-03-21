@@ -12,7 +12,7 @@ class Env:
 
     @staticmethod
     def load(envvar: str):
-        """Strictly load the provided envvar value or raise EnvironmentError."""
+        """Strictly load the provided envvar value or raise EnvError."""
         if not (result := environ.get(envvar)):
             raise EnvError(envvar)
         return result
