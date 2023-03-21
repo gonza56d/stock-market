@@ -18,6 +18,8 @@
 ### Important
 
 * The API has a throttling system made from scratch, implemented with Redis. The `THROTTLING_SECONDS` environment variable value indicates how many seconds restrict the next request. Setting this value to **0 (zero)** will disable this feature.
+* The API uses Redis cache to store session tokens and throttling limits.
+* The API uses MongoDB to store users and auth data with hashed passwords.
 
 # Endpoints:
 
