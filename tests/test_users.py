@@ -1,6 +1,5 @@
 from http import HTTPStatus
 
-from api.models.auth import Auth
 from api.models.users import User, UserSignUp
 from api.repositories.auth import AuthRepository
 from api.repositories.users import UsersRepository
