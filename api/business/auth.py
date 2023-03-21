@@ -1,9 +1,12 @@
-from api.models.users import User
+from api.repositories.auth import AccessTokenRepository
 
 
 class AuthBusiness:
     """Business logic for auth purposes."""
 
-    def get_user(self, token: str) -> User:
-        """Get a user from a valid token."""
-        pass
+    def __init__(self):
+        self._access_token_repository = AccessTokenRepository()
+
+    def get_user_id(self, token: str) -> str:
+        """Get a user_id from a valid token."""
+        return self._access_token_repository.get_user_id(token)
