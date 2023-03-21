@@ -1,11 +1,13 @@
 from random import choices
 import string
+from typing import Any
 
-from pymongo import MongoClient
 from redis import from_url as Redis
 
+from api.business.exceptions import EmailTaken
 from api.env import Env
 from api.models.auth import Auth
+from api.repositories.base import MongoRepository
 from api.repositories.exceptions import NotFound
 
 
@@ -32,18 +34,21 @@ class AccessTokenRepository:
         return token
 
 
-class AuthRepository:
+class AuthRepository(MongoRepository):
     """Store and validate auth credentials."""
 
-    def __init__(self):
-        client = MongoClient(Env.MONGO_URI)
-        db = client['stock-market']
-        self._collection = db['auth']
+    @property
+    def collection_name(self) -> str:
+        return 'auth'
+
+    @property
+    def entity(self) -> Any:
+        return Auth
 
     def save(self, auth: Auth) -> None:
         email_taken = self.is_taken(email=auth.email)
         if email_taken:
-            raise
+            raise EmailTaken()
         self._collection.insert_one(auth.dict())
 
     def is_taken(self, email: str):
@@ -55,6 +60,3 @@ class AuthRepository:
             {'email': email, 'password': password}
         )
         return result > 0
-
-    def delete(self, **filters) -> None:
-        self._collection.delete_many(filters)

@@ -1,18 +1,16 @@
-from pymongo import MongoClient
+from typing import Any
 
 from api.business.exceptions import EmailTaken
-from api.env import Env
 from api.models.users import User
-from api.repositories.exceptions import NotFound
+from api.repositories.base import MongoRepository
 
 
-class UsersRepository:
+class UsersRepository(MongoRepository):
     """Handle users data with mongo implemented repository."""
 
-    def __init__(self):
-        client = MongoClient(Env.MONGO_URI)
-        db = client['stock-market']
-        self._collection = db['users']
+    @property
+    def collection_name(self) -> str:
+        return 'users'
 
     def save(self, user: User) -> None:
         email_taken = self.find(True, email=user.email)
@@ -20,18 +18,6 @@ class UsersRepository:
             raise EmailTaken()
         self._collection.insert_one(user.dict())
 
-    def find(self, many: bool, **filters):
-        result = (
-            self._collection.find(filters)
-            if many else
-            self._collection.find_one(filters)
-        )
-        if many:
-            return [User(**data) for data in result]
-
-        if result:
-            return User(**result)
-        raise NotFound('user', 'filters', filters)
-
-    def delete(self, **filters) -> None:
-        self._collection.delete_many(filters)
+    @property
+    def entity(self) -> Any:
+        return User
