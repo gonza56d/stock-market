@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from api.models.auth import Auth
 from api.models.users import User, UserSignUp
 from api.repositories.auth import AuthRepository
 from api.repositories.users import UsersRepository
@@ -36,19 +37,21 @@ class TestUsers(ApiTest):
             last_name='Rambo',
             password='nothashedpassowrd'
         )
-        self.client.post(
-            '/users/sign_up',
-            json={
-                'email': sign_up.email,
-                'name': 'Another Name',
-                'last_name': 'Another Last Name',
-                'password': 'Different Password too'
-            }
-        )
-        second_response = self.client.post('/users/sign_up', json=sign_up.dict())
 
-        assert second_response.status_code == HTTPStatus.BAD_REQUEST
-        assert second_response.json() == {'detail': 'Email already taken'}
+        UsersRepository().save(User(
+            email=sign_up.email,
+            name='John',
+            last_name='Rambo'
+        ))
+        AuthRepository().save(Auth(
+            email=sign_up.email,
+            password='Different Password too'
+        ))
+
+        response = self.client.post('/users/sign_up', json=sign_up.dict())
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.json() == {'detail': 'Email already taken'}
 
     def test_sign_up_credentials_ok(self):
         sign_up = UserSignUp(

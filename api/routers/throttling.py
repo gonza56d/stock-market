@@ -28,8 +28,7 @@ def check_throttling(client: Address) -> None:
 
 
 def set_throttling(client: Address) -> None:
-    if Env.THROTTLING_SECONDS != 0:
-        redis_client.setex(client.host, int(Env.THROTTLING_SECONDS), client.host)
+    redis_client.setex(client.host, int(Env.THROTTLING_SECONDS), client.host)
 
 
 def validate_throttling(function):
@@ -41,8 +40,9 @@ def validate_throttling(function):
         except (KeyError, AttributeError):
             raise InvalidDependency('Decorated view must depend a Request object.')
         else:
-            check_throttling(client)
-            set_throttling(client)
+            if int(Env.THROTTLING_SECONDS) > 0:
+                check_throttling(client)
+                set_throttling(client)
             return await function(*args, **kwargs)
 
     return wrapper

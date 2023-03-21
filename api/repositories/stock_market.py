@@ -1,3 +1,6 @@
+from http import HTTPStatus
+
+from fastapi import HTTPException
 from httpx import AsyncClient
 
 from api.env import Env
@@ -22,4 +25,13 @@ class StockMarketRepository:
                     'apikey': self._api_key
                 },
             )
+            self.validate(response)
         return response.json()
+
+    def validate(self, response):
+        if 'Note' in response.json():  # Alpha Vantage API gives 200 even on max calls.
+            raise HTTPException(
+                status_code=HTTPStatus.TOO_MANY_REQUESTS,
+                detail='Maximum requests reached for Alpha Vantage API.'
+            )
+
