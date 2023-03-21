@@ -1,5 +1,7 @@
 from enum import Enum
 
+from pydantic import BaseModel
+
 
 class SymbolOption(str, Enum):
 
@@ -31,3 +33,11 @@ class FunctionOption(str, Enum):
             FunctionOption.WEEKLY: 'TIME_SERIES_WEEKLY_ADJUSTED',
             FunctionOption.MONTHLY: 'TIME_SERIES_MONTHLY_ADJUSTED'
         }[self]
+
+
+class Stock(BaseModel):
+
+    open_price: float
+    higher_price: float
+    lower_price: float
+    variation: float
