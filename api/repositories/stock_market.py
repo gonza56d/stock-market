@@ -40,7 +40,7 @@ class StockMarketRepository:
         if 'Note' in response.json():
             raise HTTPException(
                 status_code=HTTPStatus.TOO_MANY_REQUESTS,
-                detail='Maximum requests reached for Alpha Vantage API.'
+                detail='Maximum requests reached for third party API Alpha Vantage.'
             )
 
     def _calculate(self, function, iterable) -> float:
