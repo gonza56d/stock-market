@@ -36,33 +36,37 @@ class StockMarketRepository:
                 detail='Maximum requests reached for Alpha Vantage API.'
             )
 
+    def _calculate(self, function, iterable) -> float:
+        """
+        Return a result from applying given function on given iterable.
+
+        Returns 0.0 if ValueError (empty iterable) happens.
+        """
+        try:
+            return function(iterable)
+        except ValueError:
+            return 0.0
+
+    def _get_variation(self, payload: dict):
+        """Get variation from last and previous 'close' values from the payload."""
+        if len(payload) < 2:
+            return None
+        last = payload[[k for k in payload.keys()][0]]
+        previous = payload[[k for k in payload.keys()][1]]
+        variation = float(previous['4. close']) - float(last['4. close'])
+        return variation
+
     def process(self, response):
+        """Process the response data into a Stock instance."""
         json = response.json()
         keys = [k for k in json]
         payload: dict = json[keys[1]]
-
         last_key = [k for k in payload][0]
+
         open = float(payload[last_key]['1. open'])
+        higher = self._calculate(max, [float(v['2. high']) for v in payload.values()])
+        lower = self._calculate(min, [float(v['3. low']) for v in payload.values()])
+        variation = self._get_variation(payload)
 
-        try:
-            higher = max([float(value['2. high']) for value in payload.values()])
-        except ValueError:
-            higher = 0.0
-
-        try:
-            lower = min([float(value['3. low']) for value in payload.values()])
-        except ValueError:
-            lower = 0.0
-
-        variation = None
-        if len(payload) >= 2:
-            last = payload[[k for k in payload.keys()][0]]
-            previous = payload[[k for k in payload.keys()][1]]
-            variation = float(previous['4. close']) - float(last['4. close'])
-
-        return Stock(
-            open_price=open,
-            higher_price=higher,
-            lower_price=lower,
-            variation=variation
-        )
+        return Stock(open_price=open, higher_price=higher,
+                     lower_price=lower, variation=variation)
