@@ -1,7 +1,9 @@
 from http import HTTPStatus
+import responses
 
 from parameterized import parameterized
 
+from api.env import Env
 from api.models.auth import Auth
 from api.models.stock_market import SymbolOption
 from api.models.users import User
@@ -90,3 +92,44 @@ class TestStockMarket(ApiTest):
         )
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    @responses.activate
+    def test_throttling(self):
+        Env.THROTTLING_SECONDS = 1
+
+        # Mock Alpha Vantage API call for faster response in order to test throttling
+        responses.add(
+            responses.POST,
+            'https://www.alphavantage.co/query',
+            json={
+                'Meta Data': {
+                    '1. Information': 'Monthly Adjusted Prices and Volumes',
+                    '2. Symbol': 'AAPL',
+                    '3. Last Refreshed': '2023-03-20',
+                    '4. Time Zone': 'US/Eastern'
+                },
+                'Monthly Adjusted Time Series': {
+                    '2023-03-20': {
+                        '1. open': '146.8300',
+                        '2. high': '157.8200',
+                        '3. low': '143.9000',
+                        '4. close': '157.4000',
+                        '5. adjusted close': '157.4000',
+                        '6. volume': '976003226',
+                        '7. dividend amount': '0.0000'
+                    },
+                }
+            }
+        )
+
+        for n in range(2):
+            response = self.client.get(
+                '/stock-market',
+                params={
+                    'function': 'DAILY',
+                    'symbol': 'MICROSOFT'
+                },
+                headers={'Authorization': f'Bearer {self.auth_token}'}
+            )
+
+        assert response.status_code == HTTPStatus.TOO_MANY_REQUESTS
