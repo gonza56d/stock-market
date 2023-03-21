@@ -1,3 +1,4 @@
+from hashlib import sha256
 from random import choices
 import string
 from typing import Any
@@ -45,10 +46,16 @@ class AuthRepository(MongoRepository):
     def entity(self) -> Any:
         return Auth
 
+    def hash_password(self, raw_password: str) -> str:
+        hashed = sha256(raw_password.encode('UTF-8')).hexdigest()
+        return hashed
+
     def save(self, auth: Auth) -> None:
         email_taken = self.is_taken(email=auth.email)
         if email_taken:
             raise EmailTaken()
+
+        auth.password = self.hash_password(auth.password)
         self._collection.insert_one(auth.dict())
 
     def is_taken(self, email: str):
@@ -57,6 +64,9 @@ class AuthRepository(MongoRepository):
 
     def validate(self, email: str, password: str) -> bool:
         result = self._collection.count_documents(
-            {'email': email, 'password': password}
+            {
+                'email': email,
+                'password': self.hash_password(password)
+            }
         )
         return result > 0
