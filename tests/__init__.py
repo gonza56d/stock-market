@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
+from api.env import Env
 from api.main import app
 from api.repositories.auth import AuthRepository
 from api.repositories.base import MongoRepository
@@ -12,6 +13,7 @@ class ApiTest(TestCase):
 
     def setUp(self) -> None:
         super().setUp()
+        Env.THROTTLING_SECONDS = 0  # disable for faster tests
         MongoRepository.db_prefix = 'test'
         self.client = TestClient(app)
         UsersRepository().delete()
