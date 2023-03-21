@@ -59,7 +59,7 @@ class TestStockMarket(ApiTest):
             assert '2. high' in result.keys()
             assert '3. low' in result.kets()
 
-    def test_stock_market_wrong_token(self):
+    def test_stock_market_wrong_auth_token(self):
         response = self.client.get(
             '/stock-market',
             params={
