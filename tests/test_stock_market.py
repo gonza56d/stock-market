@@ -54,15 +54,10 @@ class TestStockMarket(ApiTest):
         json = response.json()
 
         assert response.status_code == HTTPStatus.OK
-        assert json['Meta Data']['2. Symbol'] == (
-            SymbolOption(symbol).alphavantage_value()
-        )
-        assert isinstance(json[self.payload_key[function]], dict)
-
-        for result in json[self.payload_key[function]].values():
-            assert '1. open' in result.keys()
-            assert '2. high' in result.keys()
-            assert '3. low' in result.keys()
+        assert 'open_price' in response.json()
+        assert 'higher_price' in response.json()
+        assert 'lower_price' in response.json()
+        assert 'variation' in response.json()
 
     def test_stock_market_wrong_auth_token(self):
         response = self.client.get(
