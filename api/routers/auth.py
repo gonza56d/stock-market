@@ -14,7 +14,7 @@ router = APIRouter(
     tags=['auth']
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth')
 
 
 @router.get('/')
