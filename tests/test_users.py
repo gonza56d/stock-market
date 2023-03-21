@@ -62,12 +62,12 @@ class TestUsers(ApiTest):
         assert AuthRepository().validate(sign_up.email, sign_up.password)
 
     def test_sign_up_password_too_short(self):
-        sign_up = UserSignUp(
-            email='test@test.com',
-            name='John',
-            last_name='Rambo',
-            password='short12'
-        )
-        response = self.client.post('/users/sign_up', json=sign_up.dict())
+        request_payload = {
+            'email': 'test@test.com',
+            'name': 'John',
+            'last_name': 'Rambo',
+            'password': '0short0'
+        }
+        response = self.client.post('/users/sign_up', json=request_payload)
 
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY

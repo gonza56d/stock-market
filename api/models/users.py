@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic.types import constr
 
 
 class User(BaseModel):
@@ -10,4 +11,4 @@ class User(BaseModel):
 
 class UserSignUp(User):
 
-    password: str
+    password: constr(min_length=8)
