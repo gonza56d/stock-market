@@ -60,3 +60,14 @@ class TestUsers(ApiTest):
         self.client.post('/users/sign_up', json=sign_up.dict())
 
         assert AuthRepository().validate(sign_up.email, sign_up.password)
+
+    def test_sign_up_password_too_short(self):
+        sign_up = UserSignUp(
+            email='test@test.com',
+            name='John',
+            last_name='Rambo',
+            password='short12'
+        )
+        response = self.client.post('/users/sign_up', json=sign_up.dict())
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
