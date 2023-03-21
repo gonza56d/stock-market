@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from pydantic.types import constr
 
 
@@ -6,7 +6,7 @@ class User(BaseModel):
 
     name: str
     last_name: str
-    email: str
+    email: EmailStr
 
 
 class UserSignUp(User):
