@@ -5,7 +5,6 @@ from parameterized import parameterized
 
 from api.env import Env
 from api.models.auth import Auth
-from api.models.stock_market import SymbolOption
 from api.models.users import User
 from api.repositories.auth import AuthRepository, AccessTokenRepository
 from api.repositories.users import UsersRepository
@@ -54,10 +53,10 @@ class TestStockMarket(ApiTest):
         json = response.json()
 
         assert response.status_code == HTTPStatus.OK
-        assert 'open_price' in response.json()
-        assert 'higher_price' in response.json()
-        assert 'lower_price' in response.json()
-        assert 'variation' in response.json()
+        assert 'open_price' in json
+        assert 'higher_price' in json
+        assert 'lower_price' in json
+        assert 'variation' in json
 
     def test_stock_market_wrong_auth_token(self):
         response = self.client.get(
@@ -66,7 +65,7 @@ class TestStockMarket(ApiTest):
                 'function': 'DAILY',
                 'symbol': 'GOOGLE'
             },
-            headers={'Authorization': f'Bearer WRONG.TOKEN'}
+            headers={'Authorization': 'Bearer WRONG.TOKEN'}
         )
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED

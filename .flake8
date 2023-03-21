@@ -1,0 +1,4 @@
+[flake8]
+import-order-style = appnexus
+exclude = .venv, venv
+max-line-length = 99

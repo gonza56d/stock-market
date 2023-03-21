@@ -49,7 +49,7 @@ class TestAuth(ApiTest):
     def test_auth_wrong_token(self):
         response = self.client.get(
             '/stock-market',
-            headers={'Authorization': f'Bearer SomeRandom.WronG.TOKEN!'}
+            headers={'Authorization': 'Bearer SomeRandom.WronG.TOKEN!'}
         )
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
