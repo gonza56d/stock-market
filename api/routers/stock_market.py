@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends
 
 from .auth import require_auth_token
 from api.models.users import User
+from ..business.stock_market import StockMarketBusiness
+from ..models.stock_market import SymbolOption, FunctionOption
 
 router = APIRouter(
     prefix='/stock-market',
@@ -13,6 +15,11 @@ router = APIRouter(
 
 
 @router.get('/')
-async def root(token: Annotated[User, Depends(require_auth_token)]):
+async def root(
+    token: Annotated[User, Depends(require_auth_token)],
+    symbol: SymbolOption,
+    function: FunctionOption
+):
     """Root endpoint. Requires auth token."""
-    return {'user': token}
+    result = await StockMarketBusiness().get_stock_market(symbol, function)
+    return result

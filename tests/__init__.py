@@ -14,6 +14,8 @@ class ApiTest(TestCase):
         super().setUp()
         MongoRepository.db_prefix = 'test'
         self.client = TestClient(app)
+        UsersRepository().delete()
+        AuthRepository().delete()
 
     def tearDown(self) -> None:
         super().tearDown()
