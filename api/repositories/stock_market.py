@@ -11,11 +11,13 @@ class StockMarketRepository:
     """HTTP Repository of the main functionality using alphavantage"""
 
     def __init__(self):
+        """Initialize the repository with prepared request client."""
         self._base_url = 'https://www.alphavantage.co/query'
         self._request_client = AsyncClient()
         self._api_key = Env.ALPHAVANTAGE_API_KEY
 
     async def get(self, symbol: SymbolOption, function: FunctionOption) -> Stock:
+        """Get stock market result from given symbol and function."""
         async with self._request_client as request:
             response = await request.get(
                 self._base_url,
