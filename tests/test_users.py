@@ -19,8 +19,8 @@ class TestUsers(ApiTest):
             last_name='Rambo',
             password='nothashedpassowrd'
         )
-        expected_result['user'] = User(sign_up.dict())
-        response = self.client.post('/users/sign_up', data=sign_up.dict())
+        expected_result['user'] = User(**sign_up.dict())
+        response = self.client.post('/users/sign_up', json=sign_up.dict())
 
         assert {
             'status_code': response.status_code,

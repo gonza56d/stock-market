@@ -6,6 +6,7 @@ class AuthBusiness:
 
     def __init__(self):
         self._access_token_repository = AccessTokenRepository()
+        self._auth_repository = AuthRepository()
 
     def get_user_id(self, token: str) -> str:
         """Get a user_id from a valid token."""

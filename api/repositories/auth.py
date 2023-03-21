@@ -1,8 +1,10 @@
 from typing import Optional
 
+from pymongo import MongoClient
 from redis import Redis
 
 from api.env import Env
+from api.models.auth import Auth
 from api.repositories.exceptions import NotFound
 
 
@@ -28,3 +30,25 @@ class AccessTokenRepository:
     def set_user_id(self, token: str, user_id: str) -> None:
         """Set a user_id with access token as key."""
         self._connection.setex(token, self._expiration, user_id)
+
+
+class AuthRepository:
+    """Store and validate auth credentials."""
+
+    def __init__(self):
+        client = MongoClient(Env.MONGO_URI)
+        db = client['stock-market']
+        self._collection = db['auth']
+
+    def save(self, auth: Auth) -> None:
+        email_taken = self.is_taken(email=auth.email)
+        if email_taken:
+            raise
+        self._collection.insert(auth.dict())
+
+    def is_taken(self, email: str):
+        taken = self._collection.count({'email': email})
+        return taken > 0
+
+    def delete(self, **filters) -> None:
+        self._collection.delete_many(filters)
