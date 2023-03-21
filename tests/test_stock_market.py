@@ -3,6 +3,7 @@ from http import HTTPStatus
 from parameterized import parameterized
 
 from api.models.auth import Auth
+from api.models.stock_market import SymbolOption
 from api.models.users import User
 from api.repositories.auth import AuthRepository, AccessTokenRepository
 from api.repositories.users import UsersRepository
@@ -51,13 +52,15 @@ class TestStockMarket(ApiTest):
         json = response.json()
 
         assert response.status_code == HTTPStatus.OK
-        assert json['Meta Data']['Symbol'] == symbol
-        assert isinstance(json[self.payload_key[symbol]], dict)
+        assert json['Meta Data']['2. Symbol'] == (
+            SymbolOption(symbol).alphavantage_value()
+        )
+        assert isinstance(json[self.payload_key[function]], dict)
 
-        for result in json[self.payload_key[symbol]].values():
+        for result in json[self.payload_key[function]].values():
             assert '1. open' in result.keys()
             assert '2. high' in result.keys()
-            assert '3. low' in result.kets()
+            assert '3. low' in result.keys()
 
     def test_stock_market_wrong_auth_token(self):
         response = self.client.get(
