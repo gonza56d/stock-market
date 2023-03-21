@@ -12,9 +12,9 @@ from tests import ApiTest
 class TestStockMarket(ApiTest):
 
     payload_key = {
-        'TIME_SERIES_DAILY_ADJUSTED': 'Time Series (Daily)',
-        'TIME_SERIES_WEEKLY_ADJUSTED': 'Weekly Adjusted Time Series',
-        'TIME_SERIES_MONTHLY_ADJUSTED': 'Monthly Adjusted Time Series'
+        'DAILY': 'Time Series (Daily)',
+        'WEEKLY': 'Weekly Adjusted Time Series',
+        'MONTHLY': 'Monthly Adjusted Time Series'
     }
 
     def setUp(self) -> None:
@@ -33,11 +33,11 @@ class TestStockMarket(ApiTest):
         self.auth_token = AccessTokenRepository().generate_access_token(self.email)
 
     @parameterized.expand([
-        ('META', 'TIME_SERIES_DAILY_ADJUSTED'),
-        ('AAPL', 'TIME_SERIES_WEEKLY_ADJUSTED'),
-        ('MSFT', 'TIME_SERIES_MONTHLY_ADJUSTED'),
-        ('GOOGL', 'TIME_SERIES_DAILY_ADJUSTED'),
-        ('AMZN', 'TIME_SERIES_WEEKLY_ADJUSTED'),
+        ('META', 'DAILY'),
+        ('APPLE', 'WEEKLY'),
+        ('MICROSOFT', 'MONTHLY'),
+        ('GOOGLE', 'DAILY'),
+        ('AMAZON', 'WEEKLY'),
     ])
     def test_stock_market_success(self, symbol: str, function: str):
         response = self.client.get(
@@ -63,8 +63,8 @@ class TestStockMarket(ApiTest):
         response = self.client.get(
             '/stock-market',
             params={
-                'function': 'TIME_SERIES_DAILY_ADJUSTED',
-                'symbol': 'GOOGL'
+                'function': 'DAILY',
+                'symbol': 'GOOGLE'
             },
             headers={'Authorization': f'Bearer WRONG.TOKEN'}
         )
@@ -72,8 +72,8 @@ class TestStockMarket(ApiTest):
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     @parameterized.expand([
-        ('TIME_SERIES_DAILY_ADJUSTED', 'SOME_INVALID_SYMBOL'),
-        ('SOME_INVALID_FUNCTION', 'MSFT'),
+        ('DAILY', 'SOME_INVALID_SYMBOL'),
+        ('SOME_INVALID_FUNCTION', 'MICROSOFT'),
         ('SOME_INVALID_FUNCTION', 'SOME_INVALID_SYMBOL')
     ])
     def test_stock_market_wrong_options(self, symbol: str, function: str):
