@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from api.repositories.auth import AuthRepository
+from api.repositories.base import MongoRepository
 from api.repositories.users import UsersRepository
 
 
@@ -11,6 +12,7 @@ class ApiTest(TestCase):
 
     def setUp(self) -> None:
         super().setUp()
+        MongoRepository.db_prefix = 'test'
         self.client = TestClient(app)
 
     def tearDown(self) -> None:

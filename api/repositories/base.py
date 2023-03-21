@@ -9,13 +9,15 @@ from api.repositories.exceptions import NotFound
 
 class MongoRepository(ABC):
 
-    def __init__(self, db_prefix: str = '') -> None:
+    db_prefix: str = ''
+
+    def __init__(self) -> None:
         client = MongoClient(Env.MONGO_URI)
 
-        if db_prefix:
-            db_prefix = f'{db_prefix}-'
+        if self.db_prefix:
+            self.db_prefix = f'{self.db_prefix}-'
 
-        db = client[f'{db_prefix}stock-market']
+        db = client[f'{self.db_prefix}stock-market']
         self._collection = db[self.collection_name]
 
     @property
