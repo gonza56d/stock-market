@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from .auth import get_current_user_id
+from .auth import get_current_user_email
 from api.models.users import User
 
 router = APIRouter(
@@ -13,5 +13,5 @@ router = APIRouter(
 
 
 @router.get('/')
-async def test(token: Annotated[User, Depends(get_current_user_id)]):
-    return {'user_id': token}
+async def test(token: Annotated[User, Depends(get_current_user_email)]):
+    return {'user': token}

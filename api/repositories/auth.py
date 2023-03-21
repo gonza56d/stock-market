@@ -1,7 +1,8 @@
-from typing import Optional
+from random import choices
+import string
 
 from pymongo import MongoClient
-from redis import Redis
+from redis import from_url as Redis
 
 from api.env import Env
 from api.models.auth import Auth
@@ -15,21 +16,20 @@ class AccessTokenRepository:
         """Initialize connection."""
         self._expiration = int(Env.ACCESS_TOKEN_EXPIRES_IN_SECONDS)
         self._connection = Redis(Env.REDIS_URI)
-        ping = self._connection.ping()
-        if not ping:
-            raise ConnectionError(
-                f'Could not connect to redis server at {Env.REDIS_URI}'
-            )
+        self._connection.ping()
 
-    def get_user_id(self, token: str) -> Optional[str]:
-        """Get a user_id from provided access token."""
-        if not (user_id := self._connection.get(token)):
-            raise NotFound('user_id', 'token', token)
-        return user_id
+    def validate(self, token: str) -> str:
+        """Validate access token and return user email."""
+        email = self._connection.get(token)
+        if not email:
+            raise NotFound('token', 'token', token)
+        return email
 
-    def set_user_id(self, token: str, user_id: str) -> None:
-        """Set a user_id with access token as key."""
-        self._connection.setex(token, self._expiration, user_id)
+    def generate_access_token(self, email: str) -> str:
+        """Store a user email with access token as key."""
+        token = ''.join(choices(string.ascii_uppercase + string.digits, k=10))
+        self._connection.setex(token, self._expiration, email)
+        return token
 
 
 class AuthRepository:
