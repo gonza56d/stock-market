@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 
+from api.business.exceptions import EmailTaken
 from api.env import Env
 from api.models.users import User
 from api.repositories.exceptions import NotFound
@@ -16,7 +17,7 @@ class UsersRepository:
     def save(self, user: User) -> None:
         email_taken = self.find(True, email=user.email)
         if email_taken:
-            raise
+            raise EmailTaken()
         self._collection.insert_one(user.dict())
 
     def find(self, many: bool, **filters):
