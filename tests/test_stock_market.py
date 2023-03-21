@@ -89,4 +89,4 @@ class TestStockMarket(ApiTest):
             headers={'Authorization': f'Bearer {self.auth_token}'}
         )
 
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
