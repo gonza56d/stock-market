@@ -19,6 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
 
 @router.get('/')
 async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]):
+    """Validate session token against cache and return user email."""
     try:
         email = AuthBusiness().validate_token(token)
     except NotFound:
@@ -32,6 +33,7 @@ async def get_current_user_email(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @router.post('/', response_model=AuthToken, status_code=201)
 async def authenticate(credentials: Auth):
+    """Validate user credentials and return session token."""
     try:
         access_token = AuthBusiness().authenticate(credentials)
     except InvalidCredentials:
