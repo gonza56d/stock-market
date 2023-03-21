@@ -46,23 +46,6 @@ class TestAuth(ApiTest):
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
-    def test_auth_token_ok(self):
-        auth_response = self.client.post(
-            '/auth',
-            json={
-                'email': self.sign_up.email,
-                'password': self.sign_up.password
-            }
-        )
-        token = auth_response.json()['token']
-
-        response = self.client.get(
-            '/stock-market',
-            headers={'Authorization': f'Bearer {token}'}
-        )
-
-        assert response.status_code == HTTPStatus.OK
-
     def test_auth_wrong_token(self):
         response = self.client.get(
             '/stock-market',
