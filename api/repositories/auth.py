@@ -27,7 +27,7 @@ class AccessTokenRepository:
 
     def __init__(self):
         """Initialize connection."""
-        self._expiration = int(Env.ACCESS_TOKEN_EXPIRES_IN_SECONDS)
+        self._expiration = Env.ACCESS_TOKEN_EXPIRES_IN_SECONDS
         self._connection = Redis(Env.REDIS_URI)
         self._connection.ping()
 
