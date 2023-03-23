@@ -1,7 +1,6 @@
 from hashlib import sha256
 from random import choices
 import string
-from typing import Any
 
 from redis import from_url as Redis
 
@@ -54,7 +53,7 @@ class AuthRepository(MongoRepository):
         return 'auth'
 
     @property
-    def entity(self) -> Any:
+    def entity(self) -> Auth:
         return Auth
 
     def save(self, auth: Auth) -> None:

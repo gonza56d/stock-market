@@ -1,5 +1,3 @@
-from typing import Any
-
 from api.business.exceptions import EmailTaken
 from api.models.users import User
 from api.repositories.base import MongoRepository
@@ -19,5 +17,5 @@ class UsersRepository(MongoRepository):
         self._collection.insert_one(user.dict())
 
     @property
-    def entity(self) -> Any:
+    def entity(self) -> User:
         return User

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Type
 
+from pydantic import BaseModel
 from pymongo import MongoClient
 
 from api.env import Env
@@ -27,11 +28,11 @@ class MongoRepository(ABC):
 
     @property
     @abstractmethod
-    def entity(self) -> Any:
+    def entity(self) -> Type[BaseModel]:
         pass
 
     @abstractmethod
-    def save(self, instance) -> None:
+    def save(self, instance: Type[BaseModel]) -> None:
         pass
 
     def find(self, many: bool, **filters):
