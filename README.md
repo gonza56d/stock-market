@@ -52,3 +52,15 @@ Core purpose of the API. `Authorization` header is required as: `Bearer {token}`
 
 Example:
 `/stock-market?function=MONTHLY&symbol=AMAZON`
+
+
+# Code Documentation:
+
+### Project structure
+
+The applied pattern is MVC. All the source code is inside the `api` package.
+
+* The `routers` package contains the endpoints (view) separated in python modules for each FastAPI's APIRouter.
+* The `business` package contains the business logic, keeping the same python modules of the routers. (E.g: users views call only users business module, and so on).
+* The `repositories` package contains the interfaces to interact with the data, using different implementations (Mongo, Redis, HTTP).
+* The `models` package contains the entities that are part of the I/O of the API.
